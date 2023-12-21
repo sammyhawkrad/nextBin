@@ -6,13 +6,12 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -28,7 +27,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     ActivityResultLauncher<String[]> locationPermissionRequest;
 
     @SuppressLint("MissingPermission")
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -40,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment)
                 getSupportFragmentManager().findFragmentById(R.id.map);
 
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
         // Request location permissions
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @SuppressLint("MissingPermission")
     @Override
-    public void onMapReady(GoogleMap map) {
+    public void onMapReady(@NonNull GoogleMap map) {
         gMap = map;
 
         gMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
@@ -74,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, locationListener);
         } else {
             // Prompt the user to enable GPS
-            Toast.makeText(this, "Please enable GPS", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please enable GPS", Toast.LENGTH_LONG).show();
         }
 
         String[] PERMISSIONS = {
@@ -84,21 +83,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationPermissionRequest.launch(PERMISSIONS);
     }
 
-    private LocationListener locationListener = new LocationListener() {
+    private final LocationListener locationListener = new LocationListener() {
         @Override
-        public void onLocationChanged(Location location) {
+        public void onLocationChanged(@NonNull Location location) {
             // Called when the location has changed
-            if (location != null) {
-                double userLatitude = location.getLatitude();
-                double userLongitude = location.getLongitude();
+            double userLatitude = location.getLatitude();
+            double userLongitude = location.getLongitude();
 
-                // Animate the camera to the user's location
-                LatLng userLatLng = new LatLng(userLatitude, userLongitude);
-                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15.0f));
+            // Animate the camera to the user's location
+            LatLng userLatLng = new LatLng(userLatitude, userLongitude);
+            gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15.0f));
 
-                // Stop requesting location updates
-                locationManager.removeUpdates(locationListener);
-            }
+            // Stop requesting location updates
+            locationManager.removeUpdates(locationListener);
         }
 
         @Override
@@ -107,12 +104,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         @Override
-        public void onProviderEnabled(String provider) {
+        public void onProviderEnabled(@NonNull String provider) {
             // Called when the provider is enabled
         }
 
         @Override
-        public void onProviderDisabled(String provider) {
+        public void onProviderDisabled(@NonNull String provider) {
             // Called when the provider is disabled
         }
     };
