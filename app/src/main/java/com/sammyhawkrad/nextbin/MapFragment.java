@@ -32,6 +32,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap gMap) {
         gMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         gMap.getUiSettings().setZoomControlsEnabled(true);
+        gMap.getUiSettings().setZoomGesturesEnabled(true);
+        gMap.getUiSettings().setCompassEnabled(true);
 
         if (ContextCompat.checkSelfPermission(
                 requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
