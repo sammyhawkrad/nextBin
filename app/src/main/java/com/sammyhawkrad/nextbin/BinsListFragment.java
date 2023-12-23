@@ -17,7 +17,7 @@ import com.sammyhawkrad.nextbin.placeholder.PlaceholderContent;
 /**
  * A fragment representing a list of Items.
  */
-public class BinFragment extends Fragment {
+public class BinsListFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -28,13 +28,13 @@ public class BinFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public BinFragment() {
+    public BinsListFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static BinFragment newInstance(int columnCount) {
-        BinFragment fragment = new BinFragment();
+    public static BinsListFragment newInstance(int columnCount) {
+        BinsListFragment fragment = new BinsListFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);

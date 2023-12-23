@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             fragment = new MapFragment();
 
         if (item.getItemId() ==  R.id.nav_list)
-            fragment = new BinFragment();
+            fragment = new BinsListFragment();
 
         if (item.getItemId() ==  R.id.nav_preferences)
             fragment = new PreferencesFragment();
