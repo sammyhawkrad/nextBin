@@ -16,4 +16,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/btm_nav" />
+
+    <Button
+        android:id="@+id/btn_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/btm_nav"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:drawableLeft="@android:drawable/ic_menu_search"
+        android:text="@string/search_this_area"
+        android:onClick="getBins" />
+
+
 </RelativeLayout>

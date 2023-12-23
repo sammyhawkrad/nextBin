@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -67,5 +68,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             getSupportFragmentManager().beginTransaction().replace(R.id.main_view, fragment).commit();
 
         return true;
+    }
+
+    public void getBins(View view) {
+        Toast.makeText(this, "Bins search initiated", Toast.LENGTH_SHORT).show();
     }
 }
