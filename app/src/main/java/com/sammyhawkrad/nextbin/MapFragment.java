@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
@@ -38,19 +40,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter {
 
     Integer DEFAULT_ZOOM = 17;
-
-    private GoogleMap gMap;
-
     static Double userLocationLat;
     static Double userLocationLon;
 
-
+    private GoogleMap gMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint({"MissingPermission", "PotentialBehaviorOverride"})
     @Override
     public void onMapReady(GoogleMap gMap) {
         this.gMap = gMap;
@@ -87,7 +86,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
 
         setLocationUpdateListener();
-
+        gMap.setInfoWindowAdapter(this);
     }
 
     @Nullable
@@ -106,8 +105,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         dataViewModel.getJsonData().observe(getViewLifecycleOwner(), jsonData -> {
             // Update the map with jsonData
             if (jsonData != null && gMap != null) {
-//                List<LatLng> latLngs = parseOSMData(jsonData);
-//                addMarkersToMap(latLngs);
                 List<JSONObject> geoJsonFeatures = convertOSMToGeoJSON(jsonData);
 
                 for (JSONObject feature : geoJsonFeatures) {
@@ -199,7 +196,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d("osmData", geoJsonFeatures.toString());
         return geoJsonFeatures;
     }
 
@@ -211,20 +207,37 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             double lat = coordinates.getDouble(1);
             double lon = coordinates.getDouble(0);
 
-
-            Log.d("tags", tags.toString());
-
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(new LatLng(lat, lon))
                     .title(formatTag(tags.get("amenity").toString().replace("_", " ")))
-                    .contentDescription(getSnippetFromTags(tags));
-                    //.snippet(getSnippetFromTags(tags));
+                    .snippet(getSnippetFromTags(tags));
 
             gMap.addMarker(markerOptions);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        // Return null to use the default info window
+        return null;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        // Inflate the custom info window layout
+        View view = getLayoutInflater().inflate(R.layout.bin_info_window, null);
+
+        // Set the content for the custom info window
+        TextView titleTextView = view.findViewById(R.id.tvInfoWindowTitle);
+        TextView snippetTextView = view.findViewById(R.id.tvInfoWindowSnippet);
+
+        titleTextView.setText(marker.getTitle());
+        snippetTextView.setText(marker.getSnippet());
+
+        return view;
     }
 
     static String getSnippetFromTags(JSONObject tags) {
@@ -245,8 +258,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         try {snippet += "\nGlass Bottles: " + formatTag(tags.get("recycling:glass_bottles").toString());} catch (JSONException ignored) {}
         try {snippet += "\nPlastic Bottles: " + formatTag(tags.get("recycling:plastic_bottles").toString());} catch (JSONException ignored) {}
         try {snippet += "\nPaper: " + formatTag(tags.get("recycling:paper").toString());} catch (JSONException ignored) {}
-
-        Log.d("snippet", snippet);
 
         return snippet;
     }
