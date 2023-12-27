@@ -29,11 +29,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     BottomNavigationView bottomNavigationView;
     private static DataViewModel dataViewModel;
 
-    // Example parameters (replace with your desired values)
-    double radius = 1000;
-    //double latitude = MapFragment.userLocationLat;
-    //double longitude = MapFragment.userLocationLon;
-
+    double radius = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
