@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +26,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -45,6 +46,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     Integer DEFAULT_ZOOM = 17;
     static Double userLocationLat;
     static Double userLocationLon;
+    DataViewModel dataViewModel;
+
+    boolean IS_FIRST_TIME = true;
 
     private GoogleMap gMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -72,8 +76,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             // Zoom to current location
             fusedLocationProviderClient.getLastLocation()
                     .addOnSuccessListener(requireActivity(), location -> {
-                        if (location != null) {
+                        if (location != null && IS_FIRST_TIME) {
                             gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM));
+                        }
+                        if (location != null && !IS_FIRST_TIME) {
+                            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM));
                         }
                     });
@@ -86,6 +94,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         }
 
         setLocationUpdateListener();
+
+        // Retrieve data from DataViewModel
+        dataViewModel.getJsonData().observe(getViewLifecycleOwner(), jsonData -> {
+            if (jsonData != null) {
+                List<JSONObject> geoJsonFeatures = convertOSMToGeoJSON(jsonData);
+                IS_FIRST_TIME = false;
+
+                for (JSONObject feature : geoJsonFeatures) {
+                    addMarkerToMap(feature);
+                }
+            }
+        });
+
         gMap.setInfoWindowAdapter(this);
     }
 
@@ -96,7 +117,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                              @Nullable Bundle savedInstanceState) {
 
         // Observe changes in the data
-        DataViewModel dataViewModel = new ViewModelProvider(requireActivity()).get(DataViewModel.class);
+        dataViewModel = new ViewModelProvider(requireActivity()).get(DataViewModel.class);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -106,6 +127,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             // Update the map with jsonData
             if (jsonData != null && gMap != null) {
                 List<JSONObject> geoJsonFeatures = convertOSMToGeoJSON(jsonData);
+                IS_FIRST_TIME = false;
 
                 for (JSONObject feature : geoJsonFeatures) {
                     addMarkerToMap(feature);
@@ -210,7 +232,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(new LatLng(lat, lon))
                     .title(formatTag(tags.get("amenity").toString().replace("_", " ")))
-                    .snippet(getSnippetFromTags(tags));
+                    .snippet(getSnippetFromTags(tags))
+                    .icon(getMarkerIcon(tags.get("amenity").toString()));
 
             gMap.addMarker(markerOptions);
 
@@ -238,6 +261,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         snippetTextView.setText(marker.getSnippet());
 
         return view;
+    }
+
+    private BitmapDescriptor getMarkerIcon(String dataAttribute) {
+        int iconResourceId;
+
+        // Determine the appropriate drawable resource based on data attribute
+        if ("waste_basket".equals(dataAttribute)) {
+            iconResourceId = R.drawable.sc_bin;
+        } else if ("recycling".equals(dataAttribute)) {
+            iconResourceId = R.drawable.sc_recycling;
+        } else {
+            iconResourceId = R.drawable.sc_bottle;
+        }
+
+        return BitmapDescriptorFactory.fromResource(iconResourceId);
     }
 
     static String getSnippetFromTags(JSONObject tags) {
