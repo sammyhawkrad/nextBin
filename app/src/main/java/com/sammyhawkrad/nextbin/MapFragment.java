@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,6 +65,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         gMap.getUiSettings().setCompassEnabled(true);
 
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12.0f));
+
+        //show search button on map
+        Button btn_Search = ((MainActivity) requireActivity()).btn_Search;
+        if (gMap.getMaxZoomLevel() > 14.0f) btn_Search.setVisibility(View.VISIBLE);
+
 
         if (ContextCompat.checkSelfPermission(
                 requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
@@ -221,6 +227,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         return geoJsonFeatures;
     }
 
+    private String markerTitle(JSONObject tags) throws JSONException {
+        if (tags.get("amenity").toString().equals("recycling")) {
+            return formatTag(tags.get("amenity") + " Bin");
+        } else {
+            return formatTag(tags.get("amenity").toString().replace("_", " "));
+        }
+    }
     private void addMarkerToMap(JSONObject feature) {
         try {
             JSONObject geometry = feature.getJSONObject("geometry");
@@ -231,7 +244,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(new LatLng(lat, lon))
-                    .title(formatTag(tags.get("amenity").toString().replace("_", " ")))
+                    .title(markerTitle(tags))
                     .snippet(getSnippetFromTags(tags))
                     .icon(getMarkerIcon(tags.get("amenity").toString()));
 

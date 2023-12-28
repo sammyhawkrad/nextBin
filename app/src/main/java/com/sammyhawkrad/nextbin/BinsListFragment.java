@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -58,6 +59,10 @@ public class BinsListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bin_list, container, false);
+
+        //hide search button in list view
+        Button btn_Search = ((MainActivity) requireActivity()).btn_Search;
+        btn_Search.setVisibility(View.GONE);
 
         // Observe changes in the data
         dataViewModel = new ViewModelProvider(requireActivity()).get(DataViewModel.class);
