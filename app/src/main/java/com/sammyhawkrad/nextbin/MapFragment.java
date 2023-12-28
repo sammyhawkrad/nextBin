@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -113,6 +114,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             }
         });
 
+        customizeMapUI();
         gMap.setInfoWindowAdapter(this);
     }
 
@@ -317,5 +319,38 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         return Arrays.stream(input.split("\\s+"))
                 .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1))
                 .collect(Collectors.joining(" "));
+    }
+
+    private void customizeMapUI() {
+        // Customize zoom controls and my location button positions
+        View zoomControls = getView().findViewById(0x1);
+        View myLocationButton = getView().findViewById(0x2);
+
+        if (zoomControls != null && zoomControls.getLayoutParams() instanceof RelativeLayout.LayoutParams
+                && myLocationButton != null && myLocationButton.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
+
+            RelativeLayout.LayoutParams zoomControlsParams = (RelativeLayout.LayoutParams) zoomControls.getLayoutParams();
+            RelativeLayout.LayoutParams myLocationButtonParams = (RelativeLayout.LayoutParams) myLocationButton.getLayoutParams();
+
+            // Switch the positions of the zoom controls and my location button
+            myLocationButtonParams.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
+            myLocationButtonParams.removeRule(RelativeLayout.ALIGN_PARENT_END);
+
+            zoomControlsParams.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            zoomControlsParams.removeRule(RelativeLayout.ALIGN_PARENT_START);
+
+            myLocationButtonParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            myLocationButtonParams.addRule(RelativeLayout.ALIGN_PARENT_END);
+
+            zoomControlsParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            zoomControlsParams.addRule(RelativeLayout.ALIGN_PARENT_END);
+
+            zoomControlsParams.setMargins(0, 16, 16, 0);
+            myLocationButtonParams.setMargins(0, 16, 16, 40);
+
+            // Apply the updated layout parameters
+            zoomControls.setLayoutParams(zoomControlsParams);
+            myLocationButton.setLayoutParams(myLocationButtonParams);
+        }
     }
 }
