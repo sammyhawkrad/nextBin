@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     Button btn_Search;
     private static DataViewModel dataViewModel;
 
-    double radius = 100;
+    double radius = 500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             fragment = new MapFragment();
 
         if (item.getItemId() ==  R.id.nav_list)
-            fragment = new BinsListFragment();
+            fragment = new BinsRecyclerViewFragment();
 
         if (item.getItemId() ==  R.id.nav_preferences)
             fragment = new PreferencesFragment();

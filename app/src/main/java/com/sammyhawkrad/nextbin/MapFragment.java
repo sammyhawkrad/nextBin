@@ -1,5 +1,7 @@
 package com.sammyhawkrad.nextbin;
 
+import static com.sammyhawkrad.nextbin.GeoUtils.convertOSMToGeoJSON;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
@@ -49,6 +51,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     static Double userLocationLat;
     static Double userLocationLon;
     DataViewModel dataViewModel;
+
+    static List<JSONObject> geoJsonFeatures;
 
     boolean IS_FIRST_TIME = true;
 
@@ -106,6 +110,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         dataViewModel.getJsonData().observe(getViewLifecycleOwner(), jsonData -> {
             if (jsonData != null) {
                 List<JSONObject> geoJsonFeatures = convertOSMToGeoJSON(jsonData);
+                MapFragment.geoJsonFeatures = geoJsonFeatures;
                 IS_FIRST_TIME = false;
 
                 for (JSONObject feature : geoJsonFeatures) {
@@ -189,47 +194,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-    private List<JSONObject> convertOSMToGeoJSON(String osmData) {
-        List<JSONObject> geoJsonFeatures = new ArrayList<>();
 
-        try {
-            JSONObject osmObject = new JSONObject(osmData);
-            JSONArray elementsArray = osmObject.getJSONArray("elements");
-
-            for (int i = 0; i < elementsArray.length(); i++) {
-                JSONObject element = elementsArray.getJSONObject(i);
-                JSONObject geoJsonFeature = new JSONObject();
-
-                // Set type and geometry
-                geoJsonFeature.put("type", "Feature");
-                geoJsonFeature.put("geometry", new JSONObject()
-                        .put("type", "Point")
-                        .put("coordinates", new JSONArray()
-                                .put(element.getDouble("lon"))
-                                .put(element.getDouble("lat"))));
-
-                // Set properties
-                JSONObject properties = new JSONObject();
-                properties.put("id", element.getLong("id"));
-
-                // Add tags to properties
-                if (element.has("tags")) {
-                    JSONObject tags = element.getJSONObject("tags");
-                    properties.put("tags", tags);
-                }
-
-                geoJsonFeature.put("properties", properties);
-
-                geoJsonFeatures.add(geoJsonFeature);
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return geoJsonFeatures;
-    }
-
-    private String markerTitle(JSONObject tags) throws JSONException {
+    static String markerTitle(JSONObject tags) throws JSONException {
         if (tags.get("amenity").toString().equals("recycling")) {
             return formatTag(tags.get("amenity") + " Bin");
         } else {
@@ -293,7 +259,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         return BitmapDescriptorFactory.fromResource(iconResourceId);
     }
 
-    static String getSnippetFromTags(JSONObject tags) {
+    private String getSnippetFromTags(JSONObject tags) {
         String snippet = "";
 
         try {snippet += "\nName: " + tags.get("name");} catch (JSONException ignored) {}
