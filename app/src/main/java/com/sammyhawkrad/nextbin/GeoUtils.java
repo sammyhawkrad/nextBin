@@ -46,11 +46,24 @@ public class GeoUtils {
 
                 // Set type and geometry
                 geoJsonFeature.put("type", "Feature");
-                geoJsonFeature.put("geometry", new JSONObject()
-                        .put("type", "Point")
-                        .put("coordinates", new JSONArray()
-                                .put(element.getDouble("lon"))
-                                .put(element.getDouble("lat"))));
+                if (element.getString("type").equals("node")) {
+                    geoJsonFeature.put("geometry", new JSONObject()
+                            .put("type", "Point")
+                            .put("coordinates", new JSONArray()
+                                    .put(element.getDouble("lon"))
+                                    .put(element.getDouble("lat"))));
+                } else if (element.getString("type").equals("way")) {
+                    geoJsonFeature.put("geometry", new JSONObject()
+                            .put("type", "Point")
+                            .put("coordinates", new JSONArray()
+                                    .put(element.getJSONObject("center").getDouble("lon"))
+                                    .put(element.getJSONObject("center").getDouble("lat"))));
+                }
+//                geoJsonFeature.put("geometry", new JSONObject()
+//                        .put("type", "Point")
+//                        .put("coordinates", new JSONArray()
+//                                .put(element.getDouble("lon"))
+//                                .put(element.getDouble("lat"))));
 
                 // Set properties
                 JSONObject properties = new JSONObject();

@@ -8,4 +8,8 @@
     <string name="search_this_area">Search</string>
     <string name="this_is_a_snippet">This is a snippet</string>
     <string name="waste_basket">Waste Basket</string>
+    <string name="preferences">Preferences</string>
+    <string name="bin_types">Bin Types:</string>
+    <string name="recycling_bin">Recycling Bin</string>
+    <string name="save_preferences">Save Preferences</string>
 </resources>

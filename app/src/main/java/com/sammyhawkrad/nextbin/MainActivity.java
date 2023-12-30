@@ -1,5 +1,7 @@
 package com.sammyhawkrad.nextbin;
 
+import static com.sammyhawkrad.nextbin.PreferencesFragment.RADIUS;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
@@ -30,8 +32,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     BottomNavigationView bottomNavigationView;
     Button btn_Search;
     private static DataViewModel dataViewModel;
-
-    double radius = 500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 return;
             }
 
+            // Add result to data view model
             if (result != null) dataViewModel.setJsonData(result);
             else Toast.makeText(activity, "Failed to fetch data", Toast.LENGTH_SHORT).show();
         }
@@ -148,6 +149,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     }
 
     public void update(View view) {
-        fetchDataAsync(radius, MapFragment.userLocationLat, MapFragment.userLocationLon);
+        fetchDataAsync(RADIUS, MapFragment.userLocationLat, MapFragment.userLocationLon);
     }
 }

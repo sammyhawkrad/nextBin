@@ -1,11 +1,15 @@
 package com.sammyhawkrad.nextbin;
 
 import static com.sammyhawkrad.nextbin.GeoUtils.convertOSMToGeoJSON;
+import static com.sammyhawkrad.nextbin.PreferencesFragment.RECYCLING_BIN;
+import static com.sammyhawkrad.nextbin.PreferencesFragment.VENDING_MACHINE;
+import static com.sammyhawkrad.nextbin.PreferencesFragment.WASTE_BASKET;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,7 +118,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 IS_FIRST_TIME = false;
 
                 for (JSONObject feature : geoJsonFeatures) {
-                    addMarkerToMap(feature);
+                    boolean isWasteBasket = false;
+                    boolean isRecyclingBin = false;
+                    boolean isVendingMachine = false;
+
+
+                    JSONObject tags;
+
+                    try {
+                        tags = feature.getJSONObject("properties").optJSONObject("tags");
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    try {isWasteBasket = tags.get("amenity").toString().equals("waste_basket");} catch (JSONException ignored) {}
+                    try {isRecyclingBin = tags.get("amenity").toString().equals("recycling"); } catch (JSONException ignored) {}
+                    try {isVendingMachine = tags.get("vending").toString().equals("bottle_return");} catch (JSONException ignored) {}
+
+                    if (isWasteBasket && WASTE_BASKET) addMarkerToMap(feature);
+                    if (isRecyclingBin && RECYCLING_BIN) addMarkerToMap(feature);
+                    if (isVendingMachine && VENDING_MACHINE) addMarkerToMap(feature);
                 }
             }
         });
@@ -136,17 +159,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
-        dataViewModel.getJsonData().observe(getViewLifecycleOwner(), jsonData -> {
-            // Update the map with jsonData
-            if (jsonData != null && gMap != null) {
-                List<JSONObject> geoJsonFeatures = convertOSMToGeoJSON(jsonData);
-                IS_FIRST_TIME = false;
-
-                for (JSONObject feature : geoJsonFeatures) {
-                    addMarkerToMap(feature);
-                }
-            }
-        });
 
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
@@ -196,10 +208,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
 
     static String markerTitle(JSONObject tags) throws JSONException {
-        if (tags.get("amenity").toString().equals("recycling")) {
+        if (tags.toString().contains("recycling")) {
             return formatTag(tags.get("amenity") + " Bin");
-        } else {
+        } else if(tags.toString().contains("waste_basket")) {
             return formatTag(tags.get("amenity").toString().replace("_", " "));
+        } else {
+            return "Vending Machine";
         }
     }
     private void addMarkerToMap(JSONObject feature) {
@@ -214,7 +228,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                     .position(new LatLng(lat, lon))
                     .title(markerTitle(tags))
                     .snippet(getSnippetFromTags(tags))
-                    .icon(getMarkerIcon(tags.get("amenity").toString()));
+                    .icon( tags.toString().contains("amenity") ? getMarkerIcon(tags.get("amenity").toString()) : getMarkerIcon(tags.get("vending").toString()));
 
             gMap.addMarker(markerOptions);
 
