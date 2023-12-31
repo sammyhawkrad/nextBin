@@ -3,8 +3,6 @@
     <string name="nav_item_preferences">Preferences</string>
     <string name="nav_item_map">Map</string>
     <string name="nav_item_list">List</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="search_this_area">Search</string>
     <string name="this_is_a_snippet">This is a snippet</string>
     <string name="waste_basket">Waste Basket</string>
@@ -12,4 +10,5 @@
     <string name="bin_types">Bin Types:</string>
     <string name="recycling_bin">Recycling Bin</string>
     <string name="save_preferences">Save Preferences</string>
+    <string name="search_radius_0m">Search radius: %dm</string>
 </resources>

@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import java.util.Locale;
+
 
 public class PreferencesFragment extends Fragment {
 
@@ -19,6 +21,7 @@ public class PreferencesFragment extends Fragment {
     static boolean WASTE_BASKET = true;
     static boolean RECYCLING_BIN = true;
     static boolean VENDING_MACHINE = true;
+
 
     public PreferencesFragment() {
         // Required empty public constructor
@@ -44,15 +47,15 @@ public class PreferencesFragment extends Fragment {
         TextView tv_seekBarValue = view.findViewById(R.id.tv_SeekBarValue);
 
         // Set the initial value
-        seekBar.setProgress((int) RADIUS);
-        tv_seekBarValue.setText("Radius: " + RADIUS + "m");
+        seekBar.setProgress(RADIUS);
+        tv_seekBarValue.setText(String.format(Locale.US, getResources().getString(R.string.search_radius_0m), RADIUS));
 
         // Set up a listener for SeekBar changes
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // Update the TextView with the selected value
-                tv_seekBarValue.setText("Radius: " + progress + "m");
+                tv_seekBarValue.setText(String.format(Locale.US, getResources().getString(R.string.search_radius_0m), progress));
             }
 
             @Override

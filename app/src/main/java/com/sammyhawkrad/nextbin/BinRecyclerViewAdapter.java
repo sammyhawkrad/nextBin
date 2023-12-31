@@ -5,9 +5,6 @@ import static com.sammyhawkrad.nextbin.MapFragment.geoJsonFeatures;
 import static com.sammyhawkrad.nextbin.MapFragment.markerTitle;
 import static com.sammyhawkrad.nextbin.MapFragment.userLocationLat;
 import static com.sammyhawkrad.nextbin.MapFragment.userLocationLon;
-import static com.sammyhawkrad.nextbin.PreferencesFragment.RECYCLING_BIN;
-import static com.sammyhawkrad.nextbin.PreferencesFragment.VENDING_MACHINE;
-import static com.sammyhawkrad.nextbin.PreferencesFragment.WASTE_BASKET;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,10 +23,6 @@ import java.util.Locale;
 
 public class BinRecyclerViewAdapter extends RecyclerView.Adapter<BinRecyclerViewAdapter.ViewHolder> {
 
-    boolean isWasteBasket;
-    boolean isRecyclingBin;
-    boolean isVendingMachine;
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -41,56 +34,22 @@ public class BinRecyclerViewAdapter extends RecyclerView.Adapter<BinRecyclerView
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         JSONObject bin = geoJsonFeatures.get(position);
 
-
         try {
+            // Get data for bin
             JSONObject tags = bin.getJSONObject("properties").optJSONObject("tags");
             JSONArray coordinates = bin.getJSONObject("geometry").getJSONArray("coordinates");
             double lat = coordinates.getDouble(1);
             double lon = coordinates.getDouble(0);
 
-            assert tags != null;
-            try {isWasteBasket = tags.get("amenity").toString().equals("waste_basket");} catch (JSONException ignored) {}
-            try {isRecyclingBin = tags.get("amenity").toString().equals("recycling"); } catch (JSONException ignored) {}
-            try {isVendingMachine = tags.get("vending").toString().equals("bottle_return");} catch (JSONException ignored) {}
-
             // Bind data to views
-            if (isWasteBasket && WASTE_BASKET) bindDataViews(holder, tags, lat, lon);
-            else if (isRecyclingBin && RECYCLING_BIN) bindDataViews(holder, tags, lat, lon);
-            else if (isVendingMachine && VENDING_MACHINE) bindDataViews(holder, tags, lat, lon);
-            else holder.itemView.setVisibility(View.INVISIBLE);
-
-//            holder.lf_tvAmenity.setText(markerTitle(tags));
-//            holder.lf_tvSnippet.setText(getSnippetFromTags(tags));
-//            if (tags.has("amenity")) holder.lf_ivIcon.setImageResource(getBinIcon(tags.get("amenity").toString()));
-//            else holder.lf_ivIcon.setImageResource(getBinIcon(tags.get("vending").toString()));
-//            holder.lf_tvDistance.setText(String.format(Locale.UK,"%.2f", GeoUtils.calculateDistance(lat, lon, userLocationLat, userLocationLon)));
-//
-//            // Set visibility of views
-//            if (isWasteBasket && !WASTE_BASKET) holder.itemView.setVisibility(View.GONE);
-//            else if (isRecyclingBin && !RECYCLING_BIN) holder.itemView.setVisibility(View.GONE);
-//            else if (isVendingMachine && !VENDING_MACHINE) holder.itemView.setVisibility(View.GONE);
-//            else holder.itemView.setVisibility(View.VISIBLE);
-//
-//            // Subtract position from geoJsonFeatures.size() if item is not visible
-//            if (holder.itemView.getVisibility() == View.GONE) {
-//                geoJsonFeatures.remove(position);
-//            }
+            bindDataViews(holder, tags, lat, lon);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-
     }
 
-    private void bindDataViews(ViewHolder holder, JSONObject tags, double lat, double lon) throws JSONException {
-        // Bind data to views
-        holder.lf_tvAmenity.setText(markerTitle(tags));
-        holder.lf_tvSnippet.setText(getSnippetFromTags(tags));
-        if (tags.has("amenity")) holder.lf_ivIcon.setImageResource(getBinIcon(tags.get("amenity").toString()));
-        else holder.lf_ivIcon.setImageResource(getBinIcon(tags.get("vending").toString()));
-        holder.lf_tvDistance.setText(String.format(Locale.UK,"%.2f", GeoUtils.calculateDistance(lat, lon, userLocationLat, userLocationLon)));
-    }
 
     @Override
     public int getItemCount() {
@@ -103,9 +62,7 @@ public class BinRecyclerViewAdapter extends RecyclerView.Adapter<BinRecyclerView
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView lf_tvAmenity;
         TextView lf_tvSnippet;
-
         TextView lf_tvDistance;
-
         ImageView lf_ivIcon;
 
         public ViewHolder(@NonNull View itemView) {
@@ -117,10 +74,11 @@ public class BinRecyclerViewAdapter extends RecyclerView.Adapter<BinRecyclerView
         }
     }
 
+    /////////////////////////////////////////////// HELPER METHODS ///////////////////////////////////////////////
     private int getBinIcon(String dataAttribute) {
         int binDrawable;
 
-        // Determine the appropriate drawable resource based on data attribute
+        // Determine the appropriate bin icn based on bin type
         if ("waste_basket".equals(dataAttribute)) {
             binDrawable = R.drawable.sc_bin;
         } else if ("recycling".equals(dataAttribute)) {
@@ -150,5 +108,14 @@ public class BinRecyclerViewAdapter extends RecyclerView.Adapter<BinRecyclerView
         try {snippet += "Paper: " + formatTag(tags.get("recycling:paper").toString());} catch (JSONException ignored) {}
 
         return snippet;
+    }
+
+    private void bindDataViews(ViewHolder holder, JSONObject tags, double lat, double lon) throws JSONException {
+        // Bind data to views
+        holder.lf_tvAmenity.setText(markerTitle(tags));
+        holder.lf_tvSnippet.setText(getSnippetFromTags(tags));
+        if (tags.has("amenity")) holder.lf_ivIcon.setImageResource(getBinIcon(tags.get("amenity").toString()));
+        else holder.lf_ivIcon.setImageResource(getBinIcon(tags.get("vending").toString()));
+        holder.lf_tvDistance.setText(String.format(Locale.UK,"%.2f", GeoUtils.calculateDistance(lat, lon, userLocationLat, userLocationLon)));
     }
 }

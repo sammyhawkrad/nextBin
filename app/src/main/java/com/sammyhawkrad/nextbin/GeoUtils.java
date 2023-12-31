@@ -59,11 +59,6 @@ public class GeoUtils {
                                     .put(element.getJSONObject("center").getDouble("lon"))
                                     .put(element.getJSONObject("center").getDouble("lat"))));
                 }
-//                geoJsonFeature.put("geometry", new JSONObject()
-//                        .put("type", "Point")
-//                        .put("coordinates", new JSONArray()
-//                                .put(element.getDouble("lon"))
-//                                .put(element.getDouble("lat"))));
 
                 // Set properties
                 JSONObject properties = new JSONObject();

@@ -114,14 +114,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         dataViewModel.getJsonData().observe(getViewLifecycleOwner(), jsonData -> {
             if (jsonData != null) {
                 List<JSONObject> geoJsonFeatures = convertOSMToGeoJSON(jsonData);
-                MapFragment.geoJsonFeatures = geoJsonFeatures;
-                IS_FIRST_TIME = false;
+
+                // Filter geoJsonFeatures based on preferences
+                List<JSONObject> filteredGeoJsonFeatures = new ArrayList<>();
 
                 for (JSONObject feature : geoJsonFeatures) {
                     boolean isWasteBasket = false;
                     boolean isRecyclingBin = false;
                     boolean isVendingMachine = false;
-
 
                     JSONObject tags;
 
@@ -135,10 +135,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                     try {isRecyclingBin = tags.get("amenity").toString().equals("recycling"); } catch (JSONException ignored) {}
                     try {isVendingMachine = tags.get("vending").toString().equals("bottle_return");} catch (JSONException ignored) {}
 
-                    if (isWasteBasket && WASTE_BASKET) addMarkerToMap(feature);
-                    if (isRecyclingBin && RECYCLING_BIN) addMarkerToMap(feature);
-                    if (isVendingMachine && VENDING_MACHINE) addMarkerToMap(feature);
+                    if (isWasteBasket && WASTE_BASKET) filteredGeoJsonFeatures.add(feature);
+                    if (isRecyclingBin && RECYCLING_BIN) filteredGeoJsonFeatures.add(feature);
+                    if (isVendingMachine && VENDING_MACHINE) filteredGeoJsonFeatures.add(feature);
                 }
+
+                // Update geoJsonFeatures
+                MapFragment.geoJsonFeatures = filteredGeoJsonFeatures;
+                IS_FIRST_TIME = false;
+
+                // Add markers to map
+                for (JSONObject feature : MapFragment.geoJsonFeatures) addMarkerToMap(feature);
             }
         });
 
