@@ -11,4 +11,5 @@
     <string name="recycling_bin">Recycling Bin</string>
     <string name="save_preferences">Save Preferences</string>
     <string name="search_radius_0m">Search radius: %dm</string>
+    <string name="vending_machine">Vending Machine</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.sammyhawkrad.nextbin;
 
-import android.annotation.SuppressLint;
+import static com.sammyhawkrad.nextbin.MainActivity.database;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -18,20 +20,19 @@ import java.util.Locale;
 public class PreferencesFragment extends Fragment {
 
     static  int RADIUS = 300;
-    static boolean WASTE_BASKET = true;
-    static boolean RECYCLING_BIN = true;
-    static boolean VENDING_MACHINE = true;
+    static boolean WASTE_BASKET;
+    static boolean RECYCLING_BIN;
+    static boolean VENDING_MACHINE;
 
+    Button btn_SavePreferences;
 
     public PreferencesFragment() {
         // Required empty public constructor
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
     }
 
     @Override
@@ -85,6 +86,21 @@ public class PreferencesFragment extends Fragment {
         cb_RecyclingBin.setOnCheckedChangeListener((buttonView, isChecked) -> RECYCLING_BIN = isChecked);
         cb_VendingMachine.setOnCheckedChangeListener((buttonView, isChecked) -> VENDING_MACHINE = isChecked);
 
+        // Handle save preferences button
+        btn_SavePreferences = view.findViewById(R.id.btn_SavePreferences);
+        btn_SavePreferences.setOnClickListener(this::savePreferences);
+
         return view;
+    }
+
+    public void savePreferences(View view) {
+        // Save preferences to database
+        database.execSQL("UPDATE preferences SET value = " + RADIUS + " WHERE preference = 'radius';");
+        database.execSQL("UPDATE preferences SET value = " + (WASTE_BASKET ? 1 : 0) + " WHERE preference = 'waste_basket';");
+        database.execSQL("UPDATE preferences SET value = " + (RECYCLING_BIN ? 1 : 0) + " WHERE preference = 'recycling_bin';");
+        database.execSQL("UPDATE preferences SET value = " + (VENDING_MACHINE ? 1 : 0) + " WHERE preference = 'vending_machine';");
+
+        Toast.makeText(requireContext(), "Preferences saved", Toast.LENGTH_SHORT).show();
+
     }
 }

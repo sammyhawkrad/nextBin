@@ -1,11 +1,15 @@
 package com.sammyhawkrad.nextbin;
 
+import static com.sammyhawkrad.nextbin.PreferencesFragment.*;
 import static com.sammyhawkrad.nextbin.PreferencesFragment.RADIUS;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -27,20 +31,28 @@ import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     BottomNavigationView bottomNavigationView;
     Button btn_Search;
     private static DataViewModel dataViewModel;
 
+    DatabaseHelper dbHelper = new DatabaseHelper(this);
+    static SQLiteDatabase database = null;
+    Cursor dbCursor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Bind
         btn_Search = findViewById(R.id.btn_search);
         bottomNavigationView = findViewById(R.id.btm_nav);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
+
+        // Initialise data view model
         dataViewModel = new ViewModelProvider(this).get(DataViewModel.class);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.main_view, new MapFragment()).commit();
@@ -67,7 +79,34 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         locationPermissionRequest.launch(PERMISSIONS);
 
+        // Initialise database
+        try {dbHelper.createDataBase();} catch (IOException ioe) {}
+        database = dbHelper.getDataBase();
+
+        dbCursor = database.rawQuery("SELECT * FROM preferences", null);
+
+        Log.d("MainActivity", "onCreate: " + dbCursor);
+
+        // get values from database
+        int index_preference = dbCursor.getColumnIndex("preference");
+        int index_value = dbCursor.getColumnIndex("value");
+
+        dbCursor.moveToFirst();
+        RADIUS = dbCursor.getInt(index_value);
+
+        dbCursor.moveToNext();
+        WASTE_BASKET = Objects.equals(dbCursor.getString(index_preference), "waste_basket") && dbCursor.getInt(index_value) == 1;
+
+        dbCursor.moveToNext();
+        RECYCLING_BIN = Objects.equals(dbCursor.getString(index_preference), "recycling_bin") && dbCursor.getInt(index_value) == 1;
+
+        dbCursor.moveToNext();
+        VENDING_MACHINE = Objects.equals(dbCursor.getString(index_preference), "vending_machine") && dbCursor.getInt(index_value) == 1;
+
+
+
     }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Fragment fragment = null;
@@ -85,6 +124,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         return true;
     }
+
+    @Override
+    protected void onDestroy() {
+        dbHelper.close();
+        super.onDestroy();
+    }
+
+///////////////////////////////////////////////////////// HELPER METHODS ///////////////////////////////////////////////
 
     private static class FetchDataAsyncTask extends AsyncTask<String, Void, String> {
 
@@ -150,5 +197,18 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     public void update(View view) {
         fetchDataAsync(RADIUS, MapFragment.userLocationLat, MapFragment.userLocationLon);
+    }
+
+    public void savePreferences(View view) {
+        // Save preferences to database
+        database.execSQL("UPDATE preferences SET value = " + RADIUS + " WHERE preference = 'radius';");
+        database.execSQL("UPDATE preferences SET value = " + (WASTE_BASKET ? 1 : 0) + " WHERE preference = 'waste_basket';");
+        database.execSQL("UPDATE preferences SET value = " + (RECYCLING_BIN ? 1 : 0) + " WHERE preference = 'recycling_bin';");
+        database.execSQL("UPDATE preferences SET value = " + (VENDING_MACHINE ? 1 : 0) + " WHERE preference = 'vending_machine';");
+
+        Toast.makeText(this, "Preferences saved", Toast.LENGTH_SHORT).show();
+
+        // Return to map view
+        //((MainActivity) requireActivity()).onNavigationItemSelected(((MainActivity) requireActivity()).navigationView.getMenu().getItem(0));
     }
 }
