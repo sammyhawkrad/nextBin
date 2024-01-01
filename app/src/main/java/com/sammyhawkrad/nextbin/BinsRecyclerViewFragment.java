@@ -49,5 +49,4 @@ public class BinsRecyclerViewFragment extends Fragment {
         return view;
     }
 
-
 }

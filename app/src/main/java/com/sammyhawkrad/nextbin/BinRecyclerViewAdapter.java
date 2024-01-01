@@ -6,6 +6,7 @@ import static com.sammyhawkrad.nextbin.MapFragment.markerTitle;
 import static com.sammyhawkrad.nextbin.MapFragment.userLocationLat;
 import static com.sammyhawkrad.nextbin.MapFragment.userLocationLon;
 
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.json.JSONArray;
@@ -48,8 +50,22 @@ public class BinRecyclerViewAdapter extends RecyclerView.Adapter<BinRecyclerView
             e.printStackTrace();
         }
 
-    }
+        // Set on click listener for bin
+        holder.itemView.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putInt("binPosition", position);
+            MapFragment mapFragment = new MapFragment();
+            mapFragment.setArguments(args);
 
+            FragmentTransaction transaction = ((MainActivity) v.getContext()).getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.main_view, mapFragment);
+            transaction.setPrimaryNavigationFragment(mapFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+
+        });
+
+    }
 
     @Override
     public int getItemCount() {

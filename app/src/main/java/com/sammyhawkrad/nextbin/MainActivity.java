@@ -34,7 +34,7 @@ import java.net.URL;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
-    BottomNavigationView bottomNavigationView;
+    static BottomNavigationView bottomNavigationView;
     Button btn_Search;
     private static DataViewModel dataViewModel;
 
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         locationPermissionRequest.launch(PERMISSIONS);
 
         // Initialise database
-        try {dbHelper.createDataBase();} catch (IOException ioe) {}
+        try {dbHelper.createDataBase();} catch (IOException ignored) {}
         database = dbHelper.getDataBase();
 
         dbCursor = database.rawQuery("SELECT * FROM preferences", null);
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     private static class FetchDataAsyncTask extends AsyncTask<String, Void, String> {
 
-        private WeakReference<MainActivity> activityReference;
+        private final WeakReference<MainActivity> activityReference;
 
         FetchDataAsyncTask(MainActivity context) {
             activityReference = new WeakReference<>(context);

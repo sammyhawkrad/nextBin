@@ -93,6 +93,8 @@ public class PreferencesFragment extends Fragment {
         return view;
     }
 
+    ////////////////////////////////////////////////////////// HELPER METHODS //////////////////////////////////////////////////////
+
     public void savePreferences(View view) {
         // Save preferences to database
         database.execSQL("UPDATE preferences SET value = " + RADIUS + " WHERE preference = 'radius';");
@@ -101,6 +103,5 @@ public class PreferencesFragment extends Fragment {
         database.execSQL("UPDATE preferences SET value = " + (VENDING_MACHINE ? 1 : 0) + " WHERE preference = 'vending_machine';");
 
         Toast.makeText(requireContext(), "Preferences saved", Toast.LENGTH_SHORT).show();
-
     }
 }

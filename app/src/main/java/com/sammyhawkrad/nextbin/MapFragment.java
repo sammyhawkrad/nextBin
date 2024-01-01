@@ -7,6 +7,7 @@ import static com.sammyhawkrad.nextbin.PreferencesFragment.WASTE_BASKET;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -60,6 +61,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     boolean IS_FIRST_TIME = true;
 
+    boolean FROM_LIST = false;
+
     private GoogleMap gMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -78,6 +81,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         //show search button on map
         Button btn_Search = ((MainActivity) requireActivity()).btn_Search;
         if (gMap.getMaxZoomLevel() > 14.0f) btn_Search.setVisibility(View.VISIBLE);
+        else btn_Search.setVisibility(View.GONE);
 
 
         if (ContextCompat.checkSelfPermission(
@@ -91,11 +95,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             // Zoom to current location
             fusedLocationProviderClient.getLastLocation()
                     .addOnSuccessListener(requireActivity(), location -> {
-                        if (location != null && IS_FIRST_TIME) {
+                        if (location != null && IS_FIRST_TIME && !FROM_LIST) {
                             gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM));
                         }
-                        if (location != null && !IS_FIRST_TIME) {
+                        if (location != null && !IS_FIRST_TIME && !FROM_LIST) {
                             gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM));
                         }
@@ -131,6 +135,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                         throw new RuntimeException(e);
                     }
 
+                    assert tags != null;
                     try {isWasteBasket = tags.get("amenity").toString().equals("waste_basket");} catch (JSONException ignored) {}
                     try {isRecyclingBin = tags.get("amenity").toString().equals("recycling"); } catch (JSONException ignored) {}
                     try {isVendingMachine = tags.get("vending").toString().equals("bottle_return");} catch (JSONException ignored) {}
@@ -148,6 +153,40 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 for (JSONObject feature : MapFragment.geoJsonFeatures) addMarkerToMap(feature);
             }
         });
+
+
+        Bundle args = getArguments();
+        if (args != null) {
+            int receivedBinIndex = args.getInt("binPosition", -1);
+
+            if (receivedBinIndex >= 0) {
+
+                FROM_LIST = true;
+
+                // Get bin data at binPosition from geoJsonFeatures
+                JSONObject receivedBin = geoJsonFeatures.get(receivedBinIndex);
+                double receivedBinLat = 0;
+                double receivedBinLon = 0;
+
+                try {
+                    receivedBinLat = receivedBin.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1);
+                    receivedBinLon = receivedBin.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0);
+                } catch (JSONException ignored) {}
+
+                gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(receivedBinLat, receivedBinLon), DEFAULT_ZOOM + 2));
+
+                // Show info window for bin
+                try {
+                    Marker marker = gMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(receivedBinLat, receivedBinLon))
+                            .title(markerTitle(receivedBin.getJSONObject("properties").optJSONObject("tags")))
+                            .snippet(getSnippetFromTags(receivedBin.getJSONObject("properties").optJSONObject("tags")))
+                            .icon(getMarkerIcon(receivedBin.getJSONObject("properties").optJSONObject("tags").get("amenity").toString())));
+                    marker.showInfoWindow();
+                } catch (JSONException ignored) {}
+            }
+        }
 
         customizeMapUI();
         gMap.setInfoWindowAdapter(this);
@@ -183,6 +222,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     }
 
+    @Override
+    public View getInfoWindow(Marker marker) {
+        // Return null to use the default info window
+        return null;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        // Inflate the custom info window layout
+        View view = getLayoutInflater().inflate(R.layout.bin_info_window, null);
+
+        // Set the content for the custom info window
+        TextView titleTextView = view.findViewById(R.id.tvInfoWindowTitle);
+        TextView snippetTextView = view.findViewById(R.id.tvInfoWindowSnippet);
+
+        titleTextView.setText(marker.getTitle());
+        snippetTextView.setText(marker.getSnippet());
+
+        return view;
+    }
+
+    /////////////////////////////////////////////////// HELPER METHODS //////////////////////////////////////////////////
+
     private void setLocationUpdateListener() {
         // Update user location variables
         LocationCallback locationCallback = new LocationCallback() {
@@ -208,11 +270,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     private LocationRequest createLocationRequest() {
         return new LocationRequest()
-                .setInterval(5000) // 5 seconds
+                .setInterval(10000) // 10 seconds
                 .setFastestInterval(3000) // 3 seconds
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
-
 
     static String markerTitle(JSONObject tags) throws JSONException {
         if (tags.toString().contains("recycling")) {
@@ -231,6 +292,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             double lat = coordinates.getDouble(1);
             double lon = coordinates.getDouble(0);
 
+            assert tags != null;
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(new LatLng(lat, lon))
                     .title(markerTitle(tags))
@@ -244,34 +306,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         }
     }
 
-    @Override
-    public View getInfoWindow(Marker marker) {
-        // Return null to use the default info window
-        return null;
-    }
-
-    @Override
-    public View getInfoContents(Marker marker) {
-        // Inflate the custom info window layout
-        View view = getLayoutInflater().inflate(R.layout.bin_info_window, null);
-
-        // Set the content for the custom info window
-        TextView titleTextView = view.findViewById(R.id.tvInfoWindowTitle);
-        TextView snippetTextView = view.findViewById(R.id.tvInfoWindowSnippet);
-
-        titleTextView.setText(marker.getTitle());
-        snippetTextView.setText(marker.getSnippet());
-
-        return view;
-    }
-
-    private BitmapDescriptor getMarkerIcon(String dataAttribute) {
+    private BitmapDescriptor getMarkerIcon(String binType) {
         int iconResourceId;
 
-        // Determine the appropriate drawable resource based on data attribute
-        if ("waste_basket".equals(dataAttribute)) {
+        // Determine the appropriate marker icon based on bin type
+        if ("waste_basket".equals(binType)) {
             iconResourceId = R.drawable.sc_bin;
-        } else if ("recycling".equals(dataAttribute)) {
+        } else if ("recycling".equals(binType)) {
             iconResourceId = R.drawable.sc_recycling;
         } else {
             iconResourceId = R.drawable.sc_bottle;
