@@ -59,8 +59,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     static List<JSONObject> geoJsonFeatures;
 
+    // Used to determine whether last location is known
     boolean IS_FIRST_TIME = true;
 
+    // Used to determine whether map is being opened from list view
     boolean FROM_LIST = false;
 
     private GoogleMap gMap;

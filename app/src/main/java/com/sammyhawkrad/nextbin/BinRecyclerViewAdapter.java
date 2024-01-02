@@ -60,6 +60,7 @@ public class BinRecyclerViewAdapter extends RecyclerView.Adapter<BinRecyclerView
             FragmentTransaction transaction = ((MainActivity) v.getContext()).getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.main_view, mapFragment);
             transaction.setPrimaryNavigationFragment(mapFragment);
+            transaction.setReorderingAllowed(true);
             transaction.addToBackStack(null);
             transaction.commit();
 
