@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,9 +34,11 @@ public class BinsRecyclerViewFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bin_list, container, false);
 
-        //hide search button in list view
+        //hide search & info buttons in preferences view
         Button btn_Search = ((MainActivity) requireActivity()).btn_Search;
+        ImageButton btn_Info = ((MainActivity) requireActivity()).btn_info;
         btn_Search.setVisibility(View.GONE);
+        btn_Info.setVisibility(View.GONE);
 
 
         // Set the adapter

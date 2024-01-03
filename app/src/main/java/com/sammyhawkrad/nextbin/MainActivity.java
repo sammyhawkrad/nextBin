@@ -1,22 +1,21 @@
 package com.sammyhawkrad.nextbin;
 
-import static com.sammyhawkrad.nextbin.PreferencesFragment.*;
 import static com.sammyhawkrad.nextbin.PreferencesFragment.RADIUS;
+import static com.sammyhawkrad.nextbin.PreferencesFragment.RECYCLING_BIN;
+import static com.sammyhawkrad.nextbin.PreferencesFragment.VENDING_MACHINE;
+import static com.sammyhawkrad.nextbin.PreferencesFragment.WASTE_BASKET;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -36,6 +35,8 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     static BottomNavigationView bottomNavigationView;
     Button btn_Search;
+
+    ImageButton btn_info;
     private static DataViewModel dataViewModel;
 
     DatabaseHelper dbHelper = new DatabaseHelper(this);
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         // Bind
         btn_Search = findViewById(R.id.btn_search);
+        btn_info = findViewById(R.id.btn_info);
         bottomNavigationView = findViewById(R.id.btm_nav);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
 
@@ -57,35 +59,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         getSupportFragmentManager().beginTransaction().replace(R.id.main_view, new MapFragment()).commit();
 
-        // Request location permissions
-        @SuppressLint("MissingPermission")
-        ActivityResultLauncher<String[]> locationPermissionRequest = registerForActivityResult(
-                new ActivityResultContracts.RequestMultiplePermissions(), result -> {
-                    Boolean fineLocationGranted = result.getOrDefault(android.Manifest.permission.ACCESS_FINE_LOCATION, false);
-                    Boolean coarseLocationGranted = result.getOrDefault(android.Manifest.permission.ACCESS_COARSE_LOCATION, false);
-
-                    if ((Boolean.FALSE.equals(fineLocationGranted)) && (Boolean.FALSE.equals(coarseLocationGranted))) {
-                        Toast.makeText(this,
-                                "Location cannot be obtained due to missing permission.",
-                                Toast.LENGTH_LONG).show();
-                    }
-                }
-        );
-
-        String[] PERMISSIONS = {
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-        };
-
-        locationPermissionRequest.launch(PERMISSIONS);
 
         // Initialise database
         try {dbHelper.createDataBase();} catch (IOException ignored) {}
         database = dbHelper.getDataBase();
 
         dbCursor = database.rawQuery("SELECT * FROM preferences", null);
-
-        Log.d("MainActivity", "onCreate: " + dbCursor);
 
         // get values from database
         int index_preference = dbCursor.getColumnIndex("preference");
@@ -102,8 +81,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         dbCursor.moveToNext();
         VENDING_MACHINE = Objects.equals(dbCursor.getString(index_preference), "vending_machine") && dbCursor.getInt(index_value) == 1;
-
-
 
     }
 
@@ -199,16 +176,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         fetchDataAsync(RADIUS, MapFragment.userLocationLat, MapFragment.userLocationLon);
     }
 
-    public void savePreferences(View view) {
-        // Save preferences to database
-        database.execSQL("UPDATE preferences SET value = " + RADIUS + " WHERE preference = 'radius';");
-        database.execSQL("UPDATE preferences SET value = " + (WASTE_BASKET ? 1 : 0) + " WHERE preference = 'waste_basket';");
-        database.execSQL("UPDATE preferences SET value = " + (RECYCLING_BIN ? 1 : 0) + " WHERE preference = 'recycling_bin';");
-        database.execSQL("UPDATE preferences SET value = " + (VENDING_MACHINE ? 1 : 0) + " WHERE preference = 'vending_machine';");
-
-        Toast.makeText(this, "Preferences saved", Toast.LENGTH_SHORT).show();
-
-        // Return to map view
-        //((MainActivity) requireActivity()).onNavigationItemSelected(((MainActivity) requireActivity()).navigationView.getMenu().getItem(0));
+    public void onClickInfo(View view) {
+        Intent intent = new Intent(this, AboutActivity.class);
+        startActivity(intent);
     }
 }

@@ -12,4 +12,13 @@
     <string name="save_preferences">Save Preferences</string>
     <string name="search_radius_0m">Search radius: %dm</string>
     <string name="vending_machine">Vending Machine</string>
+    <string name="about_nextbin">About nextBin</string>
+    <string name="nextbin_description">This app shows you the nearest trash bins and vending machines which take recyclable bottles so you can easily dispose off waste.</string>
+    <string name="credits">Credits:</string>
+    <string name="data_source">Data source: © OpenStreetMap contributors</string>
+    <string name="sc_bin_credits">Waste Bin\nStreetComplete quest bin public transport.svg\nCreated by Flo Edelmann\nLicence: CC-BY-SA-4.0</string>
+    <string name="sc_recycling_credits">Recycling Bin\nStreetComplete quest recycling materials.svg\nCreated by Tobias Zwick\nLicence: CC-BY-SA-4.0</string>
+    <string name="sc_bottle_credits">Vending Machine\nStreetComplete quest recycling glass.svg\nCreated by Tobias Zwick\nLicence: CC-BY-SA-4.0</string>
+    <string name="developer">Developer:</string>
+    <string name="developer_description">Samuel Darkwah Manu\nGithub Profile: sammyhawkrad</string>
 </resources>

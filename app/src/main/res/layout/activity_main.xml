@@ -31,5 +31,19 @@
         android:text="@string/search_this_area"
         android:visibility="invisible" />
 
+    <ImageButton
+        android:id="@+id/btn_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="150dp"
+        android:layout_marginEnd="20dp"
+        android:background="@android:drawable/ic_dialog_info"
+        android:clickable="true"
+        android:focusable="true"
+        android:backgroundTint="@color/colorSecondary"
+        android:onClick="onClickInfo" />
+        />
 
 </RelativeLayout>

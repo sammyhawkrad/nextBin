@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -47,6 +48,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter {
@@ -67,11 +69,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private GoogleMap gMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
 
+    ActivityResultLauncher<String[]> locationPermissionRequest;
+
     @SuppressLint({"MissingPermission", "PotentialBehaviorOverride"})
     @Override
     public void onMapReady(GoogleMap gMap) {
         this.gMap = gMap;
+
+        // Set map style
         gMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style));
+
         LatLng defaultLocation = new LatLng(5.58063, -0.19458);
         gMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         gMap.getUiSettings().setZoomControlsEnabled(true);
@@ -84,6 +91,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         Button btn_Search = ((MainActivity) requireActivity()).btn_Search;
         if (gMap.getMaxZoomLevel() > 14.0f) btn_Search.setVisibility(View.VISIBLE);
         else btn_Search.setVisibility(View.GONE);
+        ((MainActivity) requireActivity()).btn_info.setVisibility(View.VISIBLE);
 
 
         if (ContextCompat.checkSelfPermission(
@@ -92,7 +100,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
             gMap.setMyLocationEnabled(true);
             gMap.getUiSettings().setMyLocationButtonEnabled(true);
-
 
             // Zoom to current location
             fusedLocationProviderClient.getLastLocation()
@@ -182,9 +189,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 try {
                     Marker marker = gMap.addMarker(new MarkerOptions()
                             .position(new LatLng(receivedBinLat, receivedBinLon))
-                            .title(markerTitle(receivedBin.getJSONObject("properties").optJSONObject("tags")))
-                            .snippet(getSnippetFromTags(receivedBin.getJSONObject("properties").optJSONObject("tags")))
+                            .title(markerTitle(Objects.requireNonNull(receivedBin.getJSONObject("properties").optJSONObject("tags"))))
+                            .snippet(getSnippetFromTags(Objects.requireNonNull(receivedBin.getJSONObject("properties").optJSONObject("tags"))))
                             .icon(getMarkerIcon(receivedBin.getJSONObject("properties").optJSONObject("tags").get("amenity").toString())));
+                    assert marker != null;
                     marker.showInfoWindow();
                 } catch (JSONException ignored) {}
             }
@@ -193,6 +201,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         customizeMapUI();
         gMap.setInfoWindowAdapter(this);
     }
+
 
     @Nullable
     @Override
@@ -225,7 +234,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     }
 
     @Override
-    public View getInfoWindow(Marker marker) {
+    public View getInfoWindow(@NonNull Marker marker) {
         // Return null to use the default info window
         return null;
     }
@@ -233,7 +242,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     @Override
     public View getInfoContents(Marker marker) {
         // Inflate the custom info window layout
-        View view = getLayoutInflater().inflate(R.layout.bin_info_window, null);
+        @SuppressLint("InflateParams") View view = getLayoutInflater().inflate(R.layout.bin_info_window, null);
 
         // Set the content for the custom info window
         TextView titleTextView = view.findViewById(R.id.tvInfoWindowTitle);
@@ -353,8 +362,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     private void customizeMapUI() {
         // Customize zoom controls and my location button positions
-        View zoomControls = getView().findViewById(0x1);
-        View myLocationButton = getView().findViewById(0x2);
+        @SuppressLint("ResourceType") View zoomControls = getView().findViewById(0x1);
+        @SuppressLint("ResourceType") View myLocationButton = getView().findViewById(0x2);
 
         if (zoomControls != null && zoomControls.getLayoutParams() instanceof RelativeLayout.LayoutParams
                 && myLocationButton != null && myLocationButton.getLayoutParams() instanceof RelativeLayout.LayoutParams) {

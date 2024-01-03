@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,9 +40,11 @@ public class PreferencesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_preferences, container, false);
-        //hide search button in preferences view
+        //hide search & info buttons in preferences view
         Button btn_Search = ((MainActivity) requireActivity()).btn_Search;
+        ImageButton btn_Info = ((MainActivity) requireActivity()).btn_info;
         btn_Search.setVisibility(View.GONE);
+        btn_Info.setVisibility(View.GONE);
 
         // Handle SeekBar changes
         SeekBar seekBar = view.findViewById(R.id.seekBar);
