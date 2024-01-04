@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name" translatable="false">nextBin</string>
+    <string name="nav_item_preferences">Präferenzen</string>
+    <string name="nav_item_map">Karte</string>
+    <string name="nav_item_list">Liste</string>
+    <string name="search_this_area">Suche</string>
+    <string name="this_is_a_snippet">Dies ist ein Ausschnitt</string>
+    <string name="waste_basket">Abfallkorb</string>
+    <string name="preferences">Präferenzen</string>
+    <string name="bin_types">Behältertyp:</string>
+    <string name="recycling_bin">Recycling-Behälter</string>
+    <string name="save_preferences">Einstellungen speichern</string>
+    <string name="search_radius_0m">Suchradius: %dm</string>
+    <string name="vending_machine">Flaschenrückgabeautomat</string>
+    <string name="about_nextbin">Über nextBin</string>
+    <string name="nextbin_description">Diese App zeigt Ihnen die nächstgelegenen Mülleimer und Flaschenrückgabeautomat, die wiederverwendbare Flaschen annehmen, sodass Sie den Müll einfach entsorgen können.</string>
+    <string name="credits">Credits:</string>
+    <string name="data_source">Datenquelle: © OpenStreetMap contributors</string>
+    <string name="sc_bin_credits">Abfallkorb\nStreetComplete quest bin public transport.svg\nErstellt von Flo Edelmann\nLizenz: CC-BY-SA-4.0</string>
+    <string name="sc_recycling_credits">Recycling-Behälter\nStreetComplete quest recycling materials.svg\nErstellt von Tobias Zwick\nLizenz: CC-BY-SA-4.0</string>
+    <string name="sc_bottle_credits">Flaschenrückgabeautomat\nStreetComplete quest recycling glass.svg\nErstellt von Tobias Zwick\nLizenz: CC-BY-SA-4.0</string>
+    <string name="developer">Entwickler:</string>
+    <string name="developer_description">Samuel Darkwah Manu\nGithub-Profil: sammyhawkrad</string>
+</resources>

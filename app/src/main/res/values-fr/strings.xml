@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name" translatable="false">nextBin</string>
+    <string name="nav_item_preferences">Préférences</string>
+    <string name="nav_item_map">Carte</string>
+    <string name="nav_item_list">Liste</string>
+    <string name="search_this_area">Recherche</string>
+    <string name="this_is_a_snippet">Ceci est un extrait</string>
+    <string name="waste_basket">Corbeille</string>
+    <string name="preferences">Préférences</string>
+    <string name="bin_types">Types de bacs:</string>
+    <string name="recycling_bin">Poubelle de recyclage</string>
+    <string name="save_preferences">Enregistrer les préférences</string>
+    <string name="search_radius_0m">Rayon de recherche: %dm</string>
+    <string name="vending_machine">Distributeur automatique</string>
+    <string name="about_nextbin">À propos de NextBin</string>
+    <string name="nextbin_description">Cette application vous montre les poubelles et les distributeurs automatiques les plus proches qui acceptent les bouteilles recyclables afin que vous puissiez facilement éliminer les déchets.</string>
+    <string name="credits">Crédits:</string>
+    <string name="data_source">La source de données: © OpenStreetMap contributors</string>
+    <string name="sc_bin_credits">Corbeille\nStreetComplete quest bin public transport.svg\nCréé par Flo Edelmann\nLicence: CC-BY-SA-4.0</string>
+    <string name="sc_recycling_credits">Poubelle de recyclage\nStreetComplete quest recycling materials.svg\nCréé par Tobias Zwick\nLicence: CC-BY-SA-4.0</string>
+    <string name="sc_bottle_credits">Distributeur automatique\nStreetComplete quest recycling glass.svg\nCréé par Tobias Zwick\nLicence: CC-BY-SA-4.0</string>
+    <string name="developer">Développeur:</string>
+    <string name="developer_description">Samuel Darkwah Manu\nProfil GitHub: sammyhawkrad</string>
+</resources>

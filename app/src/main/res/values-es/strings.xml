@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name" translatable="false">nextBin</string>
+    <string name="nav_item_preferences">Preferencias</string>
+    <string name="nav_item_map">Mapa</string>
+    <string name="nav_item_list">Lista</string>
+    <string name="search_this_area">Buscar</string>
+    <string name="this_is_a_snippet">Este es un fragmento</string>
+    <string name="waste_basket">Cesta de basura</string>
+    <string name="preferences">Preferencias</string>
+    <string name="bin_types">Tipos de contenedores:</string>
+    <string name="recycling_bin">Tacho de reciclaje</string>
+    <string name="save_preferences">Guardar Preferencias</string>
+    <string name="search_radius_0m">Radio de búsqueda: %dm</string>
+    <string name="vending_machine">Máquina Expendedora</string>
+    <string name="about_nextbin">Acerca de nextBin</string>
+    <string name="nextbin_description">Esta aplicación le muestra los contenedores de basura y las máquinas expendedoras más cercanas que aceptan botellas reciclables para que pueda deshacerse de los residuos fácilmente.</string>
+    <string name="credits">Créditos:</string>
+    <string name="data_source">Fuente de datos: © OpenStreetMap contributors</string>
+    <string name="sc_bin_credits">Cesta de Basura\nStreetComplete quest bin public transport.svg\nCreado por Flo Edelmann\nLicencia: CC-BY-SA-4.0</string>
+    <string name="sc_recycling_credits">Tacho de Reciclaje\nStreetComplete quest recycling materials.svg\nCreado por Tobias Zwick\nLicencia: CC-BY-SA-4.0</string>
+    <string name="sc_bottle_credits">Máquina Expendedora\nStreetComplete quest recycling glass.svg\nCreado por Tobias Zwick\nLicencia: CC-BY-SA-4.0</string>
+    <string name="developer">Desarrollador:</string>
+    <string name="developer_description">Samuel Darkwah Manu\nPerfil de Github: sammyhawkrad</string>
+</resources>
