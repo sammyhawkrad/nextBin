@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name" translatable="false">nextBin</string>
     <string name="nav_item_preferences">Préférences</string>
     <string name="nav_item_map">Carte</string>
     <string name="nav_item_list">Liste</string>
@@ -21,4 +20,5 @@
     <string name="sc_bottle_credits">Distributeur automatique\nStreetComplete quest recycling glass.svg\nCréé par Tobias Zwick\nLicence: CC-BY-SA-4.0</string>
     <string name="developer">Développeur:</string>
     <string name="developer_description">Samuel Darkwah Manu\nProfil GitHub: sammyhawkrad</string>
+    <string name="fragment_list_placeholder_text">Recherchez des bacs dans la vue cartographique pour les voir sous forme de liste ici.</string>
 </resources>

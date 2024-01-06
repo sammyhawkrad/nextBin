@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name" translatable="false">nextBin</string>
     <string name="nav_item_preferences">Preferencias</string>
     <string name="nav_item_map">Mapa</string>
     <string name="nav_item_list">Lista</string>
@@ -21,4 +20,5 @@
     <string name="sc_bottle_credits">Máquina Expendedora\nStreetComplete quest recycling glass.svg\nCreado por Tobias Zwick\nLicencia: CC-BY-SA-4.0</string>
     <string name="developer">Desarrollador:</string>
     <string name="developer_description">Samuel Darkwah Manu\nPerfil de Github: sammyhawkrad</string>
+    <string name="fragment_list_placeholder_text">Busque contenedores en la vista de mapa para verlos como una lista aquí.</string>
 </resources>

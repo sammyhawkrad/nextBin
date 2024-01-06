@@ -1,5 +1,7 @@
 package com.sammyhawkrad.nextbin;
 
+import static com.sammyhawkrad.nextbin.MapFragment.geoJsonFeatures;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -32,7 +34,9 @@ public class BinsRecyclerViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_bin_list, container, false);
+        View view = geoJsonFeatures != null ?
+                inflater.inflate(R.layout.fragment_bin_list, container, false)
+                : inflater.inflate(R.layout.fragment_list_placeholder, container, false);
 
         //hide search & info buttons in preferences view
         Button btn_Search = ((MainActivity) requireActivity()).btn_Search;

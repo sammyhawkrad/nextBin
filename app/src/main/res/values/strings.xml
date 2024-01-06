@@ -21,4 +21,5 @@
     <string name="sc_bottle_credits">Vending Machine\nStreetComplete quest recycling glass.svg\nCreated by Tobias Zwick\nLicence: CC-BY-SA-4.0</string>
     <string name="developer">Developer:</string>
     <string name="developer_description">Samuel Darkwah Manu\nGithub Profile: sammyhawkrad</string>
+    <string name="fragment_list_placeholder_text">Search for bins in map view to see them as list here.</string>
 </resources>

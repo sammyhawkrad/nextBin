@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name" translatable="false">nextBin</string>
     <string name="nav_item_preferences">Präferenzen</string>
     <string name="nav_item_map">Karte</string>
     <string name="nav_item_list">Liste</string>
@@ -21,4 +20,5 @@
     <string name="sc_bottle_credits">Flaschenrückgabeautomat\nStreetComplete quest recycling glass.svg\nErstellt von Tobias Zwick\nLizenz: CC-BY-SA-4.0</string>
     <string name="developer">Entwickler:</string>
     <string name="developer_description">Samuel Darkwah Manu\nGithub-Profil: sammyhawkrad</string>
+    <string name="fragment_list_placeholder_text">Suchen Sie in der Kartenansicht nach Behältern, um sie hier als Liste anzuzeigen.</string>
 </resources>
