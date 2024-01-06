@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -85,6 +86,19 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     }
 
     @Override
+    public void onBackPressed() {
+        // Check the current fragment and pop the back stack accordingly
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        int backStackEntryCount = fragmentManager.getBackStackEntryCount();
+
+        if (backStackEntryCount > 0) {
+            fragmentManager.popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Fragment fragment = null;
         if (item.getItemId() == R.id.nav_map)
@@ -97,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             fragment = new PreferencesFragment();
 
         if (fragment != null)
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_view, fragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_view, fragment).addToBackStack(null).commit();
 
         return true;
     }
