@@ -273,6 +273,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         return view;
     }
 
+    // stop location updates on destroy
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (locationManager != null) {
+            locationManager.removeUpdates(locationListener);
+        }
+    }
+
     /////////////////////////////////////////////////// HELPER METHODS //////////////////////////////////////////////////
 
     static String markerTitle(JSONObject tags) throws JSONException {

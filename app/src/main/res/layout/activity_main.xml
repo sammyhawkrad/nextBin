@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        style="@style/BottomNavigation"
         app:menu="@menu/btm_nav_items" />
     <RelativeLayout
         android:id="@+id/main_view"
